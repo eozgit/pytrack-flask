@@ -7,7 +7,7 @@ from helloworld.flaskrun import flaskrun
 application = Flask(__name__)
 
 
-@application.route('/api/time', methods=['GET'])
+@application.route('/time', methods=['GET'])
 def time():
     response = Response(json.dumps({'Output': str(datetime.datetime.now())}), mimetype='application/json', status=200)
     return response
