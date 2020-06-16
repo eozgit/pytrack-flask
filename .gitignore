@@ -9,6 +9,7 @@ dist/
 build/
 *.egg
 *.egg-info/
+.eggs
 _mailinglist
 .tox/
 .cache/
