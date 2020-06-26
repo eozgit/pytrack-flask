@@ -1,5 +1,0 @@
-Flask==1.0.2
-Flask-SQLAlchemy
-marshmallow~=3.6.1
-python-jose
-pytest~=5.4.3
