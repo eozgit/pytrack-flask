@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  pytrack:
+    build: .
+    image: pytrack:prod
+    ports:
+    - "80:80"
+    command: python serve.py
+    environment:
+      - FLASK_APP=api.py
+      - FLASK_ENV=production
+      - PYTRACK_DB=${PYTRACK_DB}
