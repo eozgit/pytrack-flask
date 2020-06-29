@@ -1,4 +1,3 @@
-import sys
 import os
 import logging
 from datetime import datetime
@@ -7,10 +6,12 @@ from flask import Flask, Response, request, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow import Schema, fields
 from jose import jwt
+from dotenv import load_dotenv
 
 logging.basicConfig(filename='pytrack.log', level=logging.DEBUG)
+load_dotenv()
 app = Flask(__name__)
-pytrack_db = os.environ.get("PYTRACK_DB")
+pytrack_db = os.environ.get('PYTRACK_DB')
 app.config['SQLALCHEMY_DATABASE_URI'] = pytrack_db
 db = SQLAlchemy(app)
 
@@ -71,9 +72,9 @@ issue_schema = IssueSchema()
 issues_schema = IssueSchema(many=True)
 
 
-@app.route("/")
+@app.route('/')
 def hello():
-    return "Hello!"
+    return 'Hello!'
 
 
 @app.route('/time')
@@ -81,24 +82,35 @@ def path():
     return str(datetime.now())
 
 
-@app.route("/projects")
+@app.route('/projects')
 def get_projects():
-    try:
-        username = get_username(request)
+    username = get_username(request)
 
+    _projects = Project.query.filter(Project.owner == username).all()
+
+    if len(_projects) == 0:
+        add_sample_projects(db.session, username)
         _projects = Project.query.filter(Project.owner == username).all()
 
-        if len(_projects) == 0:
-            add_sample_projects(db.session, username)
-            _projects = Project.query.filter(Project.owner == username).all()
+    result = projects_schema.dump(_projects)
 
-        result = projects_schema.dump(_projects)
+    return Response(json.dumps(result), mimetype='application/json',
+                    status=200)
 
-        return Response(json.dumps(result), mimetype='application/json',
-                        status=200)
-    except:
-        logging.exception(sys.exc_info()[0])
-        raise
+
+@app.route('/projects', methods=['POST'])
+def create_project():
+    username = get_username(request)
+
+    body = request.get_json()
+    data = project_schema.load(body)
+    project = Project(name=data['name'], description=data['description'], owner=username)
+    db.session.add(project)
+    db.session.commit()
+
+    result = project_schema.dump(Project.query.get(project.id))
+    return Response(json.dumps(result), mimetype='application/json',
+                    status=200)
 
 
 @app.errorhandler(Exception)
