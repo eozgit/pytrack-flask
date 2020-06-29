@@ -1,12 +1,14 @@
+import sys
 import os
+import logging
 from datetime import datetime
 import json
-from flask import Flask, Response, request
+from flask import Flask, Response, request, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow import Schema, fields
-import psycopg2
 from jose import jwt
 
+logging.basicConfig(filename='pytrack.log', level=logging.DEBUG)
 app = Flask(__name__)
 pytrack_db = os.environ.get("PYTRACK_DB")
 app.config['SQLALCHEMY_DATABASE_URI'] = pytrack_db
@@ -79,34 +81,40 @@ def path():
     return str(datetime.now())
 
 
-@app.route("/connect")
-def postgres_test():
-    try:
-        conn_str = os.environ.get("PYTRACK_DB")
-        conn = psycopg2.connect(conn_str + " connect_timeout=1")
-        conn.close()
-    except psycopg2.OperationalError:
-        return 'Connection failed.'
-    else:
-        return 'Connected.'
-
-
 @app.route("/projects")
 def get_projects():
-    username = get_username(request)
+    try:
+        username = get_username(request)
 
-    _projects = Project.query.filter(Project.owner == username).all()
-
-    if len(_projects) == 0:
-        add_sample_projects(db.session, username)
         _projects = Project.query.filter(Project.owner == username).all()
 
-    result = projects_schema.dump(_projects)
+        if len(_projects) == 0:
+            add_sample_projects(db.session, username)
+            _projects = Project.query.filter(Project.owner == username).all()
 
-    return Response(json.dumps(result), mimetype='application/json', status=200)
+        result = projects_schema.dump(_projects)
+
+        return Response(json.dumps(result), mimetype='application/json',
+                        status=200)
+    except:
+        logging.exception(sys.exc_info()[0])
+        raise
+
+
+@app.errorhandler(Exception)
+def all_exception_handler(error):
+    logging.error(error)
+    return 'Error', 500
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
 def get_username(request):
+    return 'eozgit'
     token = request.headers['authorization'][7:]
     claims = jwt.get_unverified_claims(token)
     return claims['cognito:username']
