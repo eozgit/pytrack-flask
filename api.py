@@ -3,6 +3,7 @@ import logging
 from datetime import datetime
 import json
 from flask import Flask, Response, request, send_from_directory
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow import Schema, fields
 from jose import jwt
@@ -11,6 +12,7 @@ from dotenv import load_dotenv
 logging.basicConfig(filename='pytrack.log', level=logging.DEBUG)
 load_dotenv()
 app = Flask(__name__)
+cors = CORS(app)
 pytrack_db = os.environ.get('PYTRACK_DB')
 app.config['SQLALCHEMY_DATABASE_URI'] = pytrack_db
 db = SQLAlchemy(app)
@@ -126,7 +128,6 @@ def favicon():
 
 
 def get_username(request):
-    return 'eozgit'
     token = request.headers['authorization'][7:]
     claims = jwt.get_unverified_claims(token)
     return claims['cognito:username']
