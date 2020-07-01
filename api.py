@@ -88,11 +88,11 @@ def path():
 def get_projects():
     username = get_username(request)
 
-    _projects = Project.query.filter(Project.owner == username).all()
+    _projects = Project.query.filter(Project.owner == username).order_by(Project.id).all()
 
     if len(_projects) == 0:
         add_sample_projects(db.session, username)
-        _projects = Project.query.filter(Project.owner == username).all()
+        _projects = Project.query.filter(Project.owner == username).order_by(Project.id).all()
 
     result = projects_schema.dump(_projects)
 
@@ -123,6 +123,22 @@ def delete_project(project_id):
         result = project_schema.dump(project)
         db.session.delete(project)
         db.session.commit()
+        return Response(json.dumps(result), mimetype='application/json', status=200)
+    else:
+        abort(403)
+
+
+@app.route('/projects/<int:project_id>', methods=['PATCH'])
+def update_project(project_id):
+    username = get_username(request)
+    project = Project.query.get(project_id)
+    if project.owner == username:
+        body = request.get_json()
+        data = project_schema.load(body)
+        project.name = data['name']
+        project.description = data['description']
+        db.session.commit()
+        result = project_schema.dump(project)
         return Response(json.dumps(result), mimetype='application/json', status=200)
     else:
         abort(403)
