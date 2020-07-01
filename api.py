@@ -2,7 +2,7 @@ import os
 import logging
 from datetime import datetime
 import json
-from flask import Flask, Response, request, send_from_directory
+from flask import Flask, Response, request, send_from_directory, abort
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow import Schema, fields
@@ -113,6 +113,19 @@ def create_project():
     result = project_schema.dump(Project.query.get(project.id))
     return Response(json.dumps(result), mimetype='application/json',
                     status=200)
+
+
+@app.route('/projects/<int:project_id>', methods=['DELETE'])
+def delete_project(project_id):
+    username = get_username(request)
+    project = Project.query.get(project_id)
+    if project.owner == username:
+        result = project_schema.dump(project)
+        db.session.delete(project)
+        db.session.commit()
+        return Response(json.dumps(result), mimetype='application/json', status=200)
+    else:
+        abort(403)
 
 
 @app.errorhandler(Exception)
