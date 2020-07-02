@@ -9,6 +9,8 @@ from marshmallow import Schema, fields
 from jose import jwt
 from dotenv import load_dotenv
 
+from seed_data import projects_data
+
 logging.basicConfig(filename='pytrack.log', level=logging.DEBUG)
 load_dotenv()
 app = Flask(__name__)
@@ -42,7 +44,7 @@ class Issue(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'),
                            nullable=False)
     project = db.relationship('Project',
-                              backref=db.backref('issues', lazy=True))
+                              backref=db.backref('issues', lazy=True, cascade="all,delete,delete-orphan"))
 
     def __repr__(self):
         return '<Issue %r>' % self.title
@@ -163,13 +165,37 @@ def get_username(request):
 
 
 def add_sample_projects(session, username):
-    swiv = Project(name='Star Wars: Episode IV',
-                   description='A New Hope', owner=username)
-    swv = Project(name='Star Wars: Episode V',
-                  description='The Empire Strikes Back', owner=username)
-    swvi = Project(name='Star Wars: Episode VI',
-                   description='Return of the Jedi', owner=username)
-    session.add(swiv)
-    session.add(swv)
-    session.add(swvi)
+    for project_data in projects_data:
+        name = truncate(project_data['name'], 40)
+        description = truncate(project_data['description'], 90)
+        project = Project(name=name, description=description, owner=username)
+        for (i, issue_data) in enumerate(project_data['issues']):
+            title = truncate(issue_data['title'], 40)
+            description = truncate(issue_data['description'], 90)
+
+            if i == 0:
+                status = 0
+                index = 0
+            elif i < 3:
+                status = 1
+                index = i - 1
+            elif i < 5:
+                status = 2
+                index = i - 3
+            else:
+                status = 3
+                index = i - 5
+
+            issue = Issue(title=title, description=description, project=project, type=0, assignee='', storypoints=3,
+                          status=status, priority=0, index=index)
+            session.add(issue)
+        session.add(project)
     session.commit()
+
+
+def truncate(text, length):
+    return text if len(text) < length else text[:length] + '…'
+
+
+# if __name__ == '__main__':
+#     app.run()
