@@ -23,7 +23,7 @@ def hello():
 
 
 @app.route('/time')
-def path():
+def time():
     return str(datetime.now())
 
 
