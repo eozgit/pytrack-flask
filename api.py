@@ -5,11 +5,12 @@ import json
 from flask import Response, request, send_from_directory, abort
 from sqlalchemy import and_
 
+from model.issue import Issue
 from rest.root import app, db
 from model.project import Project
 from schema.project import ProjectSchema
 from schema.issue import IssueSchema
-from rest.auxiliary import get_username, add_sample_projects
+from rest.auxiliary import get_username, add_sample_projects, update_indices
 
 project_schema = ProjectSchema()
 projects_schema = ProjectSchema(many=True)
@@ -99,6 +100,36 @@ def get_issues(project_id):
                     status=200)
 
 
+@app.route('/projects/<int:project_id>/issues/<int:issue_id>', methods=['PATCH'])
+def update_issue(project_id, issue_id):
+    username = get_username(request)
+    project = Project.query.get(project_id)
+    if project.owner == username:
+
+        body = request.get_json()
+        data = issue_schema.load(body)
+        issue = [i for i in project.issues if i.id == issue_id][0]  # project.issues.filter(Issue.id == issue_id)
+        status_changed = issue.status != data['status']
+        index_changed = issue.index != data['index']
+        move_request = status_changed or index_changed
+
+        if move_request:
+            update_indices(data['status'], data['index'], issue, project.issues)
+        else:
+            issue.title = data['name']
+            issue.description = data['description']
+            issue.type = data['type']
+            issue.assignee = data['assignee']
+            issue.storypoints = data['storypoints']
+            issue.priority = data['priority']
+
+        db.session.commit()
+        result = issue_schema.dump(issue)
+        return Response(json.dumps(result), mimetype='application/json', status=200)
+    else:
+        abort(403)
+
+
 @app.errorhandler(Exception)
 def all_exception_handler(error):
     logging.error(error)
@@ -109,6 +140,7 @@ def all_exception_handler(error):
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
 
 # if __name__ == '__main__':
 #     app.run()

@@ -13,6 +13,32 @@ def get_username(request):
     return claims['cognito:username']
 
 
+def update_indices(status, index, issue, issues):
+    status_changed = issue.status != status
+    index_changed = issue.index != index
+    if status_changed:
+        to_update = [i for i in issues if i.status == issue.status and i.index > issue.index]
+        for i in to_update:
+            i.index -= 1
+        to_update = [i for i in issues if i.status == status and i.index >= index]
+        for i in to_update:
+            i.index += 1
+        issue.status = status
+    elif index_changed:
+        up = index < issue.index
+        if up:
+            to_update = [i for i in issues if
+                         i.status == issue.status and issue.index > i.index >= index]
+            for i in to_update:
+                i.index += 1
+        else:
+            to_update = [i for i in issues if
+                         i.status == issue.status and index >= i.index > issue.index]
+            for i in to_update:
+                i.index -= 1
+    issue.index = index
+
+
 def add_sample_projects(session, username):
     for project_data in projects_data:
         name = truncate(project_data['name'], 40)
@@ -58,7 +84,6 @@ def get_storypoints():
     for i, f in enumerate(fibonacci):
         if r < f:
             return fibonacci[len(fibonacci) - i - 1]
-
 
 
 def get_priority():

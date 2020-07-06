@@ -4,7 +4,7 @@ from schema.project import ProjectSchema
 
 
 class IssueSchema(Schema):
-    id = fields.Int(dump_only=True)
+    id = fields.Int()
     title = fields.Str()
     description = fields.Str()
     type = fields.Int()
