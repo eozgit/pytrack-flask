@@ -44,21 +44,23 @@ def add_sample_projects(session, username):
         name = truncate(project_data['name'], 40)
         description = truncate(project_data['description'], 90)
         project = Project(name=name, description=description, owner=username)
-        for (i, issue_data) in enumerate(project_data['issues']):
+        issues = project_data['issues']
+        count = len(issues)
+        for (i, issue_data) in enumerate(issues):
             title = truncate(issue_data['title'], 40)
             description = truncate(issue_data['description'], 90)
 
-            if i == 0:
-                status = 0
+            if i < count * .1:
+                status = 3
                 index = 0
-            elif i < 3:
-                status = 1
-                index = i - 1
-            elif i < 5:
+            elif i < count * .3:
                 status = 2
+                index = i - 1
+            elif i < count * .6:
+                status = 1
                 index = i - 3
             else:
-                status = 3
+                status = 0
                 index = i - 5
 
             issue = Issue(title=title, description=description, project=project, type=get_type(), assignee='',

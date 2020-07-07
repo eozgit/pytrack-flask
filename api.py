@@ -5,7 +5,6 @@ import json
 from flask import Response, request, send_from_directory, abort
 from sqlalchemy import and_
 
-from model.issue import Issue
 from rest.root import app, db
 from model.project import Project
 from schema.project import ProjectSchema
@@ -108,15 +107,21 @@ def update_issue(project_id, issue_id):
 
         body = request.get_json()
         data = issue_schema.load(body)
-        issue = [i for i in project.issues if i.id == issue_id][0]  # project.issues.filter(Issue.id == issue_id)
-        status_changed = issue.status != data['status']
-        index_changed = issue.index != data['index']
-        move_request = status_changed or index_changed
+        issue = [i for i in project.issues if i.id == issue_id][0]
+        position_props = ['status', 'index']
+        other_props = ['title', 'description', 'type', 'assignee', 'storypoints', 'priority']
+        position_changed = len(
+            [prop for prop in position_props if
+             prop in data and data[prop] is not None and data[prop] != getattr(issue, prop)]) > 0
+        rest_changed = len(
+            [prop for prop in other_props if
+             prop in data and data[prop] is not None and data[prop] != getattr(issue, prop)]) > 0
 
-        if move_request:
+        if position_changed:
             update_indices(data['status'], data['index'], issue, project.issues)
-        else:
-            issue.title = data['name']
+
+        if rest_changed:
+            issue.title = data['title']
             issue.description = data['description']
             issue.type = data['type']
             issue.assignee = data['assignee']
