@@ -1,3 +1,4 @@
+from collections import Counter
 from random import randrange
 from jose import jwt
 
@@ -46,22 +47,22 @@ def add_sample_projects(session, username):
         project = Project(name=name, description=description, owner=username)
         issues = project_data['issues']
         count = len(issues)
+        counter = Counter()
         for (i, issue_data) in enumerate(issues):
             title = truncate(issue_data['title'], 40)
             description = truncate(issue_data['description'], 90)
 
             if i < count * .1:
                 status = 3
-                index = 0
             elif i < count * .3:
                 status = 2
-                index = i - 1
             elif i < count * .6:
                 status = 1
-                index = i - 3
             else:
                 status = 0
-                index = i - 5
+
+            index = counter[status]
+            counter[status] += 1
 
             issue = Issue(title=title, description=description, project=project, type=get_type(), assignee='',
                           storypoints=get_storypoints(), status=status, priority=get_priority(), index=index)

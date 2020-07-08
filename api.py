@@ -62,29 +62,29 @@ def create_project():
 def delete_project(project_id):
     username = get_username(request)
     project = Project.query.get(project_id)
-    if project.owner == username:
-        result = project_schema.dump(project)
-        db.session.delete(project)
-        db.session.commit()
-        return Response(json.dumps(result), mimetype='application/json', status=200)
-    else:
+    if project.owner != username:
         abort(403)
+
+    result = project_schema.dump(project)
+    db.session.delete(project)
+    db.session.commit()
+    return Response(json.dumps(result), mimetype='application/json', status=200)
 
 
 @app.route('/projects/<int:project_id>', methods=['PATCH'])
 def update_project(project_id):
     username = get_username(request)
     project = Project.query.get(project_id)
-    if project.owner == username:
-        body = request.get_json()
-        data = project_schema.load(body)
-        project.name = data['name']
-        project.description = data['description']
-        db.session.commit()
-        result = project_schema.dump(project)
-        return Response(json.dumps(result), mimetype='application/json', status=200)
-    else:
+    if project.owner != username:
         abort(403)
+
+    body = request.get_json()
+    data = project_schema.load(body)
+    project.name = data['name']
+    project.description = data['description']
+    db.session.commit()
+    result = project_schema.dump(project)
+    return Response(json.dumps(result), mimetype='application/json', status=200)
 
 
 @app.route('/projects/<int:project_id>/issues')
@@ -92,8 +92,10 @@ def get_issues(project_id):
     username = get_username(request)
 
     project = Project.query.filter(and_(Project.owner == username, Project.id == project_id)).first()
+    issues = project.issues[:]
+    issues.sort(key=lambda i: (i.status, i.index))
 
-    result = issues_schema.dump(project.issues)
+    result = issues_schema.dump(issues)
 
     return Response(json.dumps(result), mimetype='application/json',
                     status=200)
@@ -103,35 +105,53 @@ def get_issues(project_id):
 def update_issue(project_id, issue_id):
     username = get_username(request)
     project = Project.query.get(project_id)
-    if project.owner == username:
-
-        body = request.get_json()
-        data = issue_schema.load(body)
-        issue = [i for i in project.issues if i.id == issue_id][0]
-        position_props = ['status', 'index']
-        other_props = ['title', 'description', 'type', 'assignee', 'storypoints', 'priority']
-        position_changed = len(
-            [prop for prop in position_props if
-             prop in data and data[prop] is not None and data[prop] != getattr(issue, prop)]) > 0
-        rest_changed = len(
-            [prop for prop in other_props if
-             prop in data and data[prop] is not None and data[prop] != getattr(issue, prop)]) > 0
-
-        if position_changed:
-            update_indices(data['status'], data['index'], issue, project.issues)
-
-        if rest_changed:
-            issue.title = data['title']
-            issue.description = data['description']
-            issue.type = data['type']
-            issue.storypoints = data['storypoints']
-            issue.priority = data['priority']
-
-        db.session.commit()
-        result = issue_schema.dump(issue)
-        return Response(json.dumps(result), mimetype='application/json', status=200)
-    else:
+    if project.owner != username:
         abort(403)
+
+    body = request.get_json()
+    data = issue_schema.load(body)
+    issue = [i for i in project.issues if i.id == issue_id][0]
+    position_props = ['status', 'index']
+    other_props = ['title', 'description', 'type', 'assignee', 'storypoints', 'priority']
+    position_changed = len(
+        [prop for prop in position_props if
+         prop in data and data[prop] is not None and data[prop] != getattr(issue, prop)]) > 0
+    rest_changed = len(
+        [prop for prop in other_props if
+         prop in data and data[prop] is not None and data[prop] != getattr(issue, prop)]) > 0
+
+    if position_changed:
+        update_indices(data['status'], data['index'], issue, project.issues)
+
+    if rest_changed:
+        issue.title = data['title']
+        issue.description = data['description']
+        issue.type = data['type']
+        issue.storypoints = data['storypoints']
+        issue.priority = data['priority']
+
+    db.session.commit()
+    result = issue_schema.dump(issue)
+    return Response(json.dumps(result), mimetype='application/json', status=200)
+
+
+@app.route('/projects/<int:project_id>/issues/<int:issue_id>', methods=['DELETE'])
+def delete_issue(project_id, issue_id):
+    username = get_username(request)
+    project = Project.query.get(project_id)
+    if project.owner != username:
+        abort(403)
+
+    issue = [i for i in project.issues if i.id == issue_id][0]
+    result = project_schema.dump(issue)
+    db.session.delete(issue)
+
+    to_slide = [i for i in project.issues if i.status == issue.status and i.index > issue.index]
+    for i in to_slide:
+        i.index -= 1
+
+    db.session.commit()
+    return Response(json.dumps(result), mimetype='application/json', status=200)
 
 
 @app.errorhandler(Exception)
@@ -144,7 +164,6 @@ def all_exception_handler(error):
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
-
 
 # if __name__ == '__main__':
 #     app.run()
