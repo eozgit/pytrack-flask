@@ -5,6 +5,7 @@ import json
 from flask import Response, request, send_from_directory, abort
 from sqlalchemy import and_
 
+from model.issue import Issue
 from rest.root import app, db
 from model.project import Project
 from schema.project import ProjectSchema
@@ -154,6 +155,27 @@ def delete_issue(project_id, issue_id):
     return Response(json.dumps(result), mimetype='application/json', status=200)
 
 
+@app.route('/projects/<int:project_id>/issues', methods=['POST'])
+def create_issue(project_id):
+    username = get_username(request)
+    project = Project.query.get(project_id)
+    if project.owner != username:
+        abort(403)
+
+    body = request.get_json()
+    data = issue_schema.load(body)
+    index = max([issue.index for issue in project.issues]) + 1
+    issue = Issue(title=data['title'], description=data['description'], type=data['type'],
+                  storypoints=data['storypoints'], priority=data['priority'], project_id=project.id, status=0,
+                  index=index)
+    db.session.add(issue)
+    db.session.commit()
+
+    result = issue_schema.dump(Issue.query.get(issue.id))
+    return Response(json.dumps(result), mimetype='application/json',
+                    status=200)
+
+
 @app.errorhandler(Exception)
 def all_exception_handler(error):
     logging.error(error)
@@ -164,6 +186,7 @@ def all_exception_handler(error):
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
 
 # if __name__ == '__main__':
 #     app.run()
