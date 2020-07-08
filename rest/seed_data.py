@@ -1,5 +1,75 @@
 projects_data = [
     {
+        'name': 'Kill Bill',
+        'description': 'After awakening from a four-year coma, a former assassin wreaks vengeance on the team of '
+                       'assassins who betrayed her.',
+        'issues': [
+            {
+                'title': '2',
+                'description': 'Bitch, you can just stop there. Just because I have no wish to murder you in front of '
+                               'your daughter doesn''t mean that parading her around in front of me will inspire '
+                               'sympathy. You and I have unfinished business. And not a goddamned fucking thing '
+                               'you''ve done in the subsequent four years, including getting knocked up, is going to '
+                               'change that.'
+            },
+            {
+                'title': 'The blood-splattered BRIDE',
+                'description': 'Y''all beat the hell out of that woman, but you didn''t kill her. And I put a bullet '
+                               'in her head, but her heart just kept on beating. Now you saw that yourself with your '
+                               'own beautiful blue eye. Did you not? We''ve done a lot of things to this lady. And if '
+                               'she ever wakes up, we''ll do a whole lot more. But one thing we won''t do is sneak '
+                               'into her room in the night like a filthy rat and kill her in her sleep. And the reason '
+                               'we won''t do that thing is because that thing would lower us.'
+            },
+            {
+                'title': 'The Origin of O-Ren',
+                'description': 'At 25 she did her part in the killing of nine innocent people, including my unborn '
+                               'daughter, in a small wedding chapel in El Paso, Texas. But on that day, four years '
+                               'ago, she made one big mistake: She should have killed ten.'
+            },
+            {
+                'title': 'The MAN From OKINAWA',
+                'description': 'I''ve completed doing what I swore an oath to God 28 years ago to never do again. I '
+                               'have made "something that kills people". And in that purpose, I was a success. I''ve '
+                               'done this because philisophically, I am sympathetic to your aim. I can tell you with '
+                               'no ego, this is my finest sword. And if on your journey, you should encounter God, God '
+                               'will be cut.'
+            },
+            {
+                'title': 'Showdown at House of Blue Leaves',
+                'description': 'As I said before, I''ve allowed you to keep your wicked life for two reasons. And the '
+                               'second reason is so you can tell him, in person, everything that happened here '
+                               'tonight. I want him to witness the extent of my mercy by witnessing your deformed '
+                               'body. I want you to tell him all the information you just told me. I want him to know '
+                               'what I know. I want him to know I want him to know. And I want them all to know '
+                               'they''ll all soon be as dead as O-Ren.'
+            },
+            {
+                'title': 'Massacre at Two Pines',
+                'description': 'The Bride is attending her wedding reherseal at the chapel in Texas. While discussing '
+                               'the ceremony, The Bride gets angry at the hostess for pestering her about her family, '
+                               'and goes outside for some fresh air. There she meets Bill.'
+            },
+            {
+                'title': 'The lonely grave of Paula Schulz',
+                'description': ''
+            },
+            {
+                'title': 'The Cruel Tutelage of Pai Mei',
+                'description': 'Your mandarin is lousy. It causes my ears discomfort you bray like an ass! You are not '
+                               'to speak unless spoken to. Is it too much to hope you understand cantonese?'
+            },
+            {
+                'title': 'ELLE and I',
+                'description': ''
+            },
+            {
+                'title': 'Face to Face',
+                'description': ''
+            }
+        ]
+    },
+    {
         'name': 'Inglourious Basterds',
         'description': 'In German-occupied France, young Jewish refugee Shosanna Dreyfus witnesses the slaughter '
                        'of her family by Colonel Hans Landa. Narrowly escaping with her life, she plots her '
@@ -102,76 +172,6 @@ projects_data = [
                                'dead. Domergue claims that more of her brother''s men are waiting in Red Rock to kill '
                                'Mannix and sack the town; if Mannix shoots Warren and allows her to escape, she says, '
                                'the gang will spare him.'
-            }
-        ]
-    },
-    {
-        'name': 'Kill Bill',
-        'description': 'After awakening from a four-year coma, a former assassin wreaks vengeance on the team of '
-                       'assassins who betrayed her.',
-        'issues': [
-            {
-                'title': '2',
-                'description': 'Bitch, you can just stop there. Just because I have no wish to murder you in front of '
-                               'your daughter doesn''t mean that parading her around in front of me will inspire '
-                               'sympathy. You and I have unfinished business. And not a goddamned fucking thing '
-                               'you''ve done in the subsequent four years, including getting knocked up, is going to '
-                               'change that.'
-            },
-            {
-                'title': 'The blood-splattered BRIDE',
-                'description': 'Y''all beat the hell out of that woman, but you didn''t kill her. And I put a bullet '
-                               'in her head, but her heart just kept on beating. Now you saw that yourself with your '
-                               'own beautiful blue eye. Did you not? We''ve done a lot of things to this lady. And if '
-                               'she ever wakes up, we''ll do a whole lot more. But one thing we won''t do is sneak '
-                               'into her room in the night like a filthy rat and kill her in her sleep. And the reason '
-                               'we won''t do that thing is because that thing would lower us.'
-            },
-            {
-                'title': 'The Origin of O-Ren',
-                'description': 'At 25 she did her part in the killing of nine innocent people, including my unborn '
-                               'daughter, in a small wedding chapel in El Paso, Texas. But on that day, four years '
-                               'ago, she made one big mistake: She should have killed ten.'
-            },
-            {
-                'title': 'The MAN From OKINAWA',
-                'description': 'I''ve completed doing what I swore an oath to God 28 years ago to never do again. I '
-                               'have made "something that kills people". And in that purpose, I was a success. I''ve '
-                               'done this because philisophically, I am sympathetic to your aim. I can tell you with '
-                               'no ego, this is my finest sword. And if on your journey, you should encounter God, God '
-                               'will be cut.'
-            },
-            {
-                'title': 'Showdown at House of Blue Leaves',
-                'description': 'As I said before, I''ve allowed you to keep your wicked life for two reasons. And the '
-                               'second reason is so you can tell him, in person, everything that happened here '
-                               'tonight. I want him to witness the extent of my mercy by witnessing your deformed '
-                               'body. I want you to tell him all the information you just told me. I want him to know '
-                               'what I know. I want him to know I want him to know. And I want them all to know '
-                               'they''ll all soon be as dead as O-Ren.'
-            },
-            {
-                'title': 'Massacre at Two Pines',
-                'description': 'The Bride is attending her wedding reherseal at the chapel in Texas. While discussing '
-                               'the ceremony, The Bride gets angry at the hostess for pestering her about her family, '
-                               'and goes outside for some fresh air. There she meets Bill.'
-            },
-            {
-                'title': 'The lonely grave of Paula Schulz',
-                'description': ''
-            },
-            {
-                'title': 'The Cruel Tutelage of Pai Mei',
-                'description': 'Your mandarin is lousy. It causes my ears discomfort you bray like an ass! You are not '
-                               'to speak unless spoken to. Is it too much to hope you understand cantonese?'
-            },
-            {
-                'title': 'ELLE and I',
-                'description': ''
-            },
-            {
-                'title': 'Face to Face',
-                'description': ''
             }
         ]
     }

@@ -124,7 +124,6 @@ def update_issue(project_id, issue_id):
             issue.title = data['title']
             issue.description = data['description']
             issue.type = data['type']
-            issue.assignee = data['assignee']
             issue.storypoints = data['storypoints']
             issue.priority = data['priority']
 
