@@ -8,7 +8,6 @@ from rest.seed_data import projects_data
 
 
 def get_username(request):
-    return 'eozgit'
     token = request.headers['authorization'][7:]
     claims = jwt.get_unverified_claims(token)
     return claims['cognito:username']
