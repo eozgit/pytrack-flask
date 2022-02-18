@@ -1,9 +1,6 @@
 ### Quake-PyTrack: Project management system
 
 
-[Live App](https://6e7l3m4eu6.execute-api.us-east-1.amazonaws.com/pytrack-stage/app/index.html)
-
-
 ##### Preview
 
 <img src='./pytrack.gif' alt='Quake-PyTrack preview' />
